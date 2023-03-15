@@ -1,0 +1,33 @@
+Yes, if you use stringified numbers with more than 15 significant digits but less than 34 significant digits on a field of type Decimal128, Mongoose should be able to handle it without losing precision.
+
+The Decimal128 type in Mongoose represents a 128-bit decimal floating-point number, which can store up to 34 significant digits with high precision. When you store a string in a Decimal128 field, Mongoose will automatically convert it to a Decimal128 instance using the underlying MongoDB driver.
+
+For example, suppose you have a Mongoose schema with a field called "amount" that is a Decimal128:
+
+php
+Copy code
+const transactionSchema = new mongoose.Schema({
+  description: String,
+  amount: mongoose.Schema.Types.Decimal128
+});
+If you want to create a new transaction with an amount of 123456789012345.6789, you can write:
+
+javascript
+Copy code
+const transaction = new Transaction({
+  description: 'Test transaction',
+  amount: '123456789012345.6789'
+});
+
+await transaction.save();
+
+In this example, we're passing the amount value as a string, and Mongoose will convert it to a Decimal128 instance before storing it in the database.
+
+You can also use comparison operators such as $gt, $lt, $gte, and $lte with Decimal128 fields, as shown in the following example:
+
+php
+Copy code
+const transactions = await Transaction.find({ amount: { $gte: '1000000' } });
+
+This query will find all transactions with an amount greater than or equal to 1000000, using the stringified number representation. 
+Mongoose will automatically convert the string to a Decimal128 instance before running the query.
